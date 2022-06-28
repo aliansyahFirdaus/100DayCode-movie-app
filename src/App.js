@@ -20,24 +20,40 @@ function App() {
   // ];
 
   const [dummyMovies, setDummyMovies] = useState([]);
+  const [isLoading, setIsLoading] = useState();
 
-  const fetchMovies = () => {
-    fetch("https://swapi.dev/api/films")
-      .then((data) => data.json())
-      .then((response) => {
-        const filmDummy = response.results.map((film) => {
-          return {
-            title: film.title,
-            releaseDate: film.release_date,
-            openingText: film.opening_crawl,
-          };
-        });
+  const fetchMovies = async () => {
+    setIsLoading(true)
+    const fetchMovies = await fetch("https://swapi.dev/api/films");
+    const data = await fetchMovies.json();
 
-        setDummyMovies(filmDummy);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setIsLoading(false);
+
+    const filmDummy = data.results.map((film) => {
+      return {
+        title: film.title,
+        releaseDate: film.release_date,
+        openingText: film.opening_crawl,
+      };
+    });
+
+    setDummyMovies(filmDummy);
+
+    // .then((data) => data.json())
+    // .then((response) => {
+    //   const filmDummy = response.results.map((film) => {
+    //     return {
+    //       title: film.title,
+    //       releaseDate: film.release_date,
+    //       openingText: film.opening_crawl,
+    //     };
+    //   });
+
+    //   setDummyMovies(filmDummy);
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
   };
 
   console.log(dummyMovies);
@@ -48,7 +64,8 @@ function App() {
         <button onClick={fetchMovies}>Fetch Movies</button>
       </section>
       <section>
-        <MoviesList movies={dummyMovies} />
+        {!isLoading && <MoviesList movies={dummyMovies} />}
+        {isLoading && <p>Loading...</p>}
       </section>
     </React.Fragment>
   );
